@@ -1,0 +1,1118 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    cursor: crosshair;
+    overflow-y: hidden;
+}
+
+body {
+    background: linear-gradient(135deg, #1a237e, #283593);
+    color: white;
+    font-family: 'Arial', sans-serif;
+    overflow: hidden;
+    user-select: none;
+    
+    /* ЦЕНТРИРУЕМ ВСЁ СОДЕРЖИМОЕ */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100vw;
+}
+
+#gameContainer {
+    position: relative;
+    width: 1200px; /* Фиксированная ширина как у canvas */
+    height: 800px; /* Фиксированная высота как у canvas */
+    
+    /* Центрируем контейнер */
+    margin: 0 auto;
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    
+    /* Добавляем тень для лучшего визуального отделения */
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    border-radius: 8px; /* Легкое скругление углов */
+}
+
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10;
+    border-radius: 8px; /* Соответствует canvas */
+}
+
+.hidden {
+    display: none !important;
+}
+
+h1 {
+    font-size: 4em;
+    margin-bottom: 30px;
+    text-shadow: 0 0 20px #ff6d00;
+    color: #ffab00;
+    text-align: center;
+}
+
+h2 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    color: #ffab00;
+}
+
+.menu {
+    background: rgba(30, 30, 60, 0.9);
+    padding: 40px;
+    border-radius: 15px;
+    border: 3px solid #ff6d00;
+    box-shadow: 0 0 30px rgba(255, 109, 0, 0.5);
+}
+
+.btn {
+    background: linear-gradient(45deg, #ff6d00, #ffab00);
+    color: black;
+    border: none;
+    padding: 15px 30px;
+    margin: 10px;
+    border-radius: 8px;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-width: 200px;
+    text-align: center;
+}
+
+.btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px #ff6d00;
+}
+
+.btn:active {
+    transform: scale(0.95);
+}
+
+.level-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.level-btn {
+    width: 80px;
+    height: 80px;
+    font-size: 1.5em;
+}
+
+.level-btn.completed {
+    background: linear-gradient(45deg, #4caf50, #8bc34a);
+}
+
+.level-btn.locked {
+    background: linear-gradient(45deg, #757575, #9e9e9e);
+    cursor: not-allowed;
+}
+
+.ui-panel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 12px;
+    border-radius: 10px;
+    border: 2px solid #ff6d00;
+    z-index: 5;
+    min-width: 180px; /* Делаем компактнее */
+}
+
+.stats {
+    font-size: 1em; /* Чуть меньше шрифт */
+    margin: 4px 0;
+}
+
+.mode-indicator {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid #ff6d00;
+    z-index: 5;
+    font-size: 1.1em;
+}
+
+.details-panel {
+    position: absolute;
+    top: 20px;
+    right: 200px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: 2px solid #ff6d00;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.details-count {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #ffeb3b;
+}
+
+.call-fighter-btn {
+    background: linear-gradient(45deg, #4caf50, #8bc34a);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.call-fighter-btn:disabled {
+    background: #757575;
+    cursor: not-allowed;
+}
+
+.instructions {
+    margin-top: 20px;
+    text-align: left;
+    max-width: 600px;
+    max-height: 70vh;
+    overflow-y: auto;
+    line-height: 1.4;
+    padding: 0 20px;
+    
+    /* СКРЫВАЕМ ПОЛОСУ ПРОКРУТКИ */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE и Edge */
+}
+
+.instructions::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+.key {
+    display: inline-block;
+    background: #ffab00;
+    color: black;
+    padding: 2px 8px;
+    margin: 0 2px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    min-width: 20px;
+    text-align: center;
+}
+
+.loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5em;
+    color: #ffab00;
+}
+
+/* Панель выбора снарядов */
+.ammo-panel {
+    position: absolute;
+    bottom: 20px;
+    right: 120px;
+    display: flex;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid #ff6d00;
+    z-index: 5;
+}
+
+.ammo-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-width: 60px;
+}
+
+.ammo-option:hover {
+    background: rgba(255, 109, 0, 0.3);
+}
+
+.ammo-option.selected {
+    background: rgba(255, 109, 0, 0.5);
+    border: 1px solid #ff6d00;
+}
+
+.ammo-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-bottom: 5px;
+}
+
+.ammo-count {
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #ffeb3b;
+}
+
+.ammo-hotkey {
+    font-size: 0.8em;
+    color: #ccc;
+    margin-top: 2px;
+}
+
+/* Кнопка магазина */
+.shop-btn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: linear-gradient(45deg, #ff6d00, #ffab00);
+    color: black;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 5;
+    transition: all 0.3s;
+}
+
+.shop-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px #ff6d00;
+}
+
+/* Модальное окно магазина */
+.shop-modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    
+    /* Убедимся что прокрутка работает на всем модальном окне */
+    overflow: auto;
+    
+    /* СКРЫВАЕМ ПОЛОСУ ПРОКРУТКИ */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.shop-modal::-webkit-scrollbar {
+    display: none;
+}
+
+.shop-content {
+    background: rgba(30, 30, 60, 0.95);
+    padding: 25px;
+    border-radius: 15px;
+    border: 3px solid #ff6d00;
+    max-width: 90%;
+    max-height: 90%;
+    overflow-y: auto;
+    text-align: center;
+    box-shadow: 0 0 50px rgba(255, 109, 0, 0.7);
+    
+    /* СКРЫВАЕМ ПОЛОСУ ПРОКРУТКИ */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.shop-content::-webkit-scrollbar {
+    display: none;
+}
+
+.shop-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+    justify-content: center;
+}
+
+.shop-item {
+    background: rgba(50, 50, 80, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid #444;
+    min-width: 200px;
+    max-width: 280px;
+    margin: 0 auto;
+    transition: all 0.3s ease;
+}
+
+.shop-item:hover {
+    border-color: #ff6d00;
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(255, 109, 0, 0.3);
+}
+
+.ammo-preview {
+    width: 40px;
+    height: 40px;
+    margin: 15px auto;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.ammo-preview.piercing {
+    background: #4caf50;
+    position: relative;
+}
+
+.ammo-preview.piercing::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 3px;
+    background: #4caf50;
+    transform: translate(-50%, -50%) rotate(45deg);
+    border-radius: 2px;
+}
+
+.ammo-preview.explosive {
+    background: #ff4444;
+    position: relative;
+}
+
+.ammo-preview.explosive::after {
+    content: '💥';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+}
+
+.shop-price {
+    color: #ffeb3b;
+    margin: 15px 0;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.shop-balance {
+    font-size: 1.3em;
+    margin: 20px 0;
+    color: #ffeb3b;
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ff6d00;
+}
+
+.buy-btn {
+    padding: 10px 20px;
+    font-size: 1em;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.close-shop {
+    margin-top: 20px;
+    padding: 12px 30px;
+    font-size: 1.1em;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .shop-content {
+        padding: 15px;
+        margin: 10px;
+        max-width: 95%;
+    }
+    
+    .shop-items {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .shop-item {
+        min-width: auto;
+        max-width: 300px;
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .shop-content h2 {
+        font-size: 1.5em;
+    }
+    
+    .shop-item h3 {
+        font-size: 1.2em;
+    }
+    
+    .shop-price {
+        font-size: 1em;
+    }
+}
+
+/* Адаптивность для очень маленьких экранов */
+@media (max-width: 1240px) {
+    body {
+        padding: 20px;
+        align-items: flex-start;
+    }
+    
+    #gameContainer {
+        transform: scale(0.9);
+        transform-origin: top center;
+    }
+}
+
+@media (max-width: 1100px) {
+    #gameContainer {
+        transform: scale(0.8);
+    }
+}
+
+@media (max-height: 860px) {
+    body {
+        align-items: flex-start;
+        padding-top: 20px;
+    }
+}
+
+/* Дополнительные стили для лучшего UX при прокрутке */
+.instructions, .shop-content {
+    /* Плавная прокрутка */
+    scroll-behavior: smooth;
+    
+    /* Улучшаем внешний вид при прокрутке */
+    padding-right: 20px; /* Компенсируем отсутствие скроллбара */
+    margin-right: -20px; /* Компенсируем padding */
+}
+
+/* Для Firefox добавляем поддержку */
+@-moz-document url-prefix() {
+    .instructions, .shop-content {
+        padding-right: 0;
+        margin-right: 0;
+    }
+}
+
+/* Убедимся что контент хорошо выглядит */
+.instructions p {
+    margin: 8px 0;
+}
+
+.instructions strong {
+    color: #ffab00;
+}
+
+/* Стили для кнопок уровней */
+.level-btn.completed {
+    background: linear-gradient(45deg, #4caf50, #8bc34a);
+    position: relative;
+}
+
+.level-btn.completed::after {
+    content: '✓';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 0.8em;
+    color: white;
+}
+
+.level-btn.locked {
+    background: linear-gradient(45deg, #757575, #9e9e9e);
+    cursor: not-allowed;
+    opacity: 0.7;
+    position: relative;
+}
+
+.level-btn.locked::after {
+    content: '🔒';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 0.8em;
+}
+
+.level-btn.locked:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Индикатор прогресса на экране выбора уровней */
+.level-progress {
+    margin: 15px 0;
+    font-size: 1.1em;
+    color: #ffeb3b;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ff6d00;
+}
+
+.progress-bar {
+    width: 300px;
+    height: 10px;
+    background: #333;
+    border-radius: 5px;
+    margin: 10px auto;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(45deg, #4caf50, #8bc34a);
+    border-radius: 5px;
+    transition: width 0.3s ease;
+}
+
+/* Диалоговое окно для боссов */
+.boss-dialog {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    background: rgba(0, 0, 0, 0.9);
+    border: 3px solid #ff6d00;
+    border-radius: 15px;
+    padding: 20px;
+    z-index: 1000;
+    box-shadow: 0 0 30px rgba(255, 109, 0, 0.7);
+    backdrop-filter: blur(10px);
+}
+
+.dialog-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.dialog-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid #ff6d00;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.dialog-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.dialog-text {
+    flex: 1;
+    color: white;
+}
+
+.dialog-name {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #ffab00;
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px rgba(255, 171, 0, 0.5);
+}
+
+.dialog-message {
+    font-size: 1.1em;
+    line-height: 1.4;
+    margin-bottom: 15px;
+    color: #e0e0e0;
+}
+
+.dialog-continue {
+    background: linear-gradient(45deg, #ff6d00, #ffab00);
+    color: black;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.dialog-continue:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px #ff6d00;
+}
+
+/* Можно добавить стили для лучшего отображения длинного текста */
+.ui-panel .stats {
+    font-size: 0.9em; /* Чуть меньше шрифт для длинного текста */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Убедимся что плашки нормально выглядят */
+.ui-panel .stats {
+    margin: 4px 0;
+    font-size: 0.9em;
+}
+
+#gameContainer {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #1a237e, #283593); /* Синий фон для пустых областей */
+    overflow: hidden;
+}
+
+canvas {
+    position: relative;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain; /* Сохраняет пропорции */
+    
+    /* Сохраняем тень и скругление */
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+}
+
+/* ПОЛНОЭКРАННЫЙ МАГАЗИН */
+.shop-modal-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #1a237e, #283593);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.shop-header {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 20px 40px;
+    border-bottom: 3px solid #ff6d00;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.shop-header h1 {
+    color: #ffab00;
+    font-size: 2.5em;
+    text-shadow: 0 0 20px #ff6d00;
+    margin: 0;
+}
+
+.shop-balance-large {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(255, 109, 0, 0.2);
+    padding: 15px 25px;
+    border-radius: 15px;
+    border: 2px solid #ff6d00;
+}
+
+.balance-icon {
+    font-size: 2em;
+}
+
+.balance-text {
+    color: #fff;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.balance-amount {
+    color: #ffeb3b;
+    font-size: 2em;
+    font-weight: bold;
+    text-shadow: 0 0 10px #ffeb3b;
+}
+
+.shop-categories {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.category-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 2px solid #666;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.category-btn:hover {
+    background: rgba(255, 109, 0, 0.3);
+    border-color: #ff6d00;
+}
+
+.category-btn.active {
+    background: linear-gradient(135deg, #ff6d00, #ffab00);
+    border-color: #ff6d00;
+    color: black;
+    box-shadow: 0 0 20px rgba(255, 109, 0, 0.7);
+}
+
+.shop-content-fullscreen {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.shop-category {
+    display: none;
+}
+
+.shop-category.active {
+    display: block;
+}
+
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.shop-item-large {
+    background: rgba(30, 30, 60, 0.9);
+    border: 3px solid #444;
+    border-radius: 20px;
+    padding: 25px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.shop-item-large:hover {
+    border-color: #ff6d00;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(255, 109, 0, 0.3);
+}
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.item-header h3 {
+    color: #ffab00;
+    font-size: 1.5em;
+    margin: 0;
+}
+
+.item-badge {
+    background: #666;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: bold;
+    overflow-x: hidden;
+}
+
+.item-badge.premium {
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+}
+
+.item-badge.explosive {
+    background: linear-gradient(135deg, #ff4444, #cc0000);
+}
+
+.ammo-preview-large {
+    width: 100%;
+    height: 120px;
+    border-radius: 15px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ammo-trail {
+    width: 80%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, #ffeb3b, transparent);
+    animation: trailMove 2s infinite;
+}
+
+.ammo-preview-large.piercing {
+    background: linear-gradient(135deg, #4caf50, #388e3c);
+}
+
+.ammo-laser {
+    width: 80%;
+    height: 6px;
+    background: linear-gradient(90deg, #4caf50, #aed581, #4caf50);
+    box-shadow: 0 0 20px #4caf50;
+    animation: laserPulse 1.5s infinite;
+}
+
+.ammo-preview-large.explosive {
+    background: linear-gradient(135deg, #ff4444, #d32f2f);
+}
+
+.ammo-explosion {
+    width: 60px;
+    height: 60px;
+    background: radial-gradient(circle, #ffeb3b, #ff9800, #ff4444);
+    border-radius: 50%;
+    animation: explodePulse 2s infinite;
+}
+
+@keyframes trailMove {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+@keyframes laserPulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+@keyframes explodePulse {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.2); opacity: 1; }
+}
+
+.item-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.stat {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 8px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.stat-label {
+    color: #ccc;
+    font-size: 0.8em;
+    display: block;
+}
+
+.stat-value {
+    color: #ffeb3b;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.item-description {
+    color: #ccc;
+    font-size: 0.9em;
+    line-height: 1.4;
+    margin: 15px 0;
+    text-align: center;
+}
+
+.shop-price-large {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(255, 109, 0, 0.2);
+    border-radius: 10px;
+    border: 1px solid #ff6d00;
+}
+
+.price-icon {
+    font-size: 1.5em;
+}
+
+.price-amount {
+    color: #ffeb3b;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.price-text {
+    color: #fff;
+    font-size: 1em;
+}
+
+.buy-btn-large {
+    width: 100%;
+    padding: 18px;
+    font-size: 1.3em;
+    font-weight: bold;
+    background: linear-gradient(135deg, #ff6d00, #ffab00);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.buy-btn-large:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(255, 109, 0, 0.5);
+}
+
+.buy-btn-large:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.coming-soon {
+    text-align: center;
+    padding: 80px 20px;
+    color: #ccc;
+}
+
+.coming-soon-icon {
+    font-size: 4em;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.coming-soon h2 {
+    color: #ffab00;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+.coming-soon p {
+    font-size: 1.5em;
+    color: #ff6d00;
+    margin-bottom: 20px;
+}
+
+.coming-soon-text {
+    font-size: 1.1em;
+    opacity: 0.8;
+}
+
+.shop-footer {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 20px 40px;
+    border-top: 3px solid #ff6d00;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.player-ammo-info {
+    display: flex;
+    gap: 30px;
+}
+
+.ammo-counter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px 15px;
+    border-radius: 8px;
+}
+
+.ammo-type {
+    color: #ccc;
+    font-size: 0.9em;
+}
+
+.ammo-count {
+    color: #ffeb3b;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.close-shop-large {
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.close-shop-large:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(76, 175, 80, 0.5);
+}
+
+/* АДАПТИВНОСТЬ */
+@media (max-width: 768px) {
+    .shop-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .shop-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .shop-footer {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .player-ammo-info {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
