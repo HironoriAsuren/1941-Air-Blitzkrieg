@@ -46,7 +46,7 @@ function startLevel(level) {
         player: new Player(),
         gameTime: 0,
         destroyedCount: 0,
-        details: 50,
+        details: 0,
         isMoving: false,
         gameActive: true,        // Игра активна - можно стрелять и двигаться
         animationActive: false,  // Анимации не активны (только после смерти)
@@ -2144,4 +2144,5 @@ class SakuraAura {
     deactivate() {
         this.startFadeOut();
     }
+
 }
