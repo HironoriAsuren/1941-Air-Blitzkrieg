@@ -18,18 +18,6 @@ const CONFIG = {
         9: 30,
         10: 35
     },
-    ENEMIES_PER_LEVEL: {
-        1: 1,
-        2: 1, 
-        3: 1,
-        4: 1,
-        5: 5,
-        6: 1,
-        7: 1,
-        8: 1,
-        9: 1,
-        10: 5
-    },
     TOTAL_LEVELS: 11, // 10 обычных + бесконечный
     FIGHTER_COST: 50,
     REWARDS: {
@@ -117,4 +105,5 @@ const SPRITE_SIZES = {
 
 // Глобальные переменные для доступа из всех файлов
 window.CONFIG = CONFIG;
+
 window.SPRITE_SIZES = SPRITE_SIZES;
