@@ -18,11 +18,14 @@ function init() {
     createAmmoSelectionUI();
     createShopButton();
     
+    // ЗАГРУЖАЕМ ДОСТИЖЕНИЯ ПРИ СТАРТЕ ИГРЫ
+    loadAchievements();
+    
     // Загружаем ресурсы и инициализируем звуки
     loadResources().then(() => {
         setupEventListeners();
         generateLevelButtons();
-        initializeAudioSystem(); // Инициализируем звуковую систему
+        initializeAudioSystem();
     });
 }
 
@@ -89,7 +92,8 @@ function loadResources() {
         japaneseAdmiral: 'sounds/Japanese_admiral.ogg',
         naziOfficer: 'sounds/Nazi_officer.ogg',
         minefall: 'sounds/minefall.mp3',
-        mineboom: 'sounds/mineboom.mp3' 
+        mineboom: 'sounds/mineboom.mp3',
+        getachieved: 'sounds/getachived.mp3'
     };
     
     for (const [name, src] of Object.entries(soundResources)) {

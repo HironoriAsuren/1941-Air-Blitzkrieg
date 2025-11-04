@@ -1,4 +1,4 @@
-// Управление интерфейсом
+// ui.js - ОБНОВЛЕННЫЙ с кастомизированными модальными окнами
 console.log('✅ ui.js загружен');
 
 // Добавляем систему прогресса
@@ -6,6 +6,401 @@ let gameProgress = {
     unlockedLevels: 1, // По умолчанию открыт только 1 уровень
     completedLevels: 0
 };
+
+// Функция для создания модального окна
+function createModal(title, message, buttonText = 'OK', onConfirm = null, showCancel = false, cancelText = 'Отмена') {
+    // Удаляем существующее модальное окно если есть
+    const existingModal = document.getElementById('customModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    const modal = document.createElement('div');
+    modal.id = 'customModal';
+    modal.className = 'custom-modal';
+    
+    // Добавляем кнопку отмены если нужно
+    const cancelButton = showCancel ? 
+        `<button class="btn modal-btn-cancel" id="modalCancelBtn">${cancelText}</button>` : '';
+    
+    const buttonsHTML = showCancel ? 
+        `<div class="modal-buttons">
+            <button class="btn modal-btn-cancel" id="modalCancelBtn">${cancelText}</button>
+            <button class="btn modal-btn-confirm" id="modalOkBtn">${buttonText}</button>
+        </div>` :
+        `<div class="modal-footer">
+            <button class="btn modal-btn" id="modalOkBtn">${buttonText}</button>
+        </div>`;
+
+    modal.innerHTML = `
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">${title}</h2>
+            </div>
+            <div class="modal-body">
+                <div class="modal-message">${message}</div>
+            </div>
+            ${buttonsHTML}
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Обработчик кнопки подтверждения
+    document.getElementById('modalOkBtn').addEventListener('click', () => {
+        closeModal();
+        if (onConfirm && typeof onConfirm === 'function') {
+            onConfirm();
+        }
+    });
+
+    // Обработчик кнопки отмены
+    if (showCancel) {
+        document.getElementById('modalCancelBtn').addEventListener('click', () => {
+            closeModal();
+        });
+    }
+
+    // Закрытие по клику на overlay
+    modal.querySelector('.modal-overlay').addEventListener('click', () => {
+        closeModal();
+    });
+
+    // Закрытие по ESC
+    const handleKeydown = (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+            document.removeEventListener('keydown', handleKeydown);
+        }
+    };
+    document.addEventListener('keydown', handleKeydown);
+
+    return modal;
+}
+
+// Функция закрытия модального окна
+function closeModal() {
+    const modal = document.getElementById('customModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Система достижений
+const ACHIEVEMENTS = {
+    bavaria: {
+        id: 'bavaria',
+        title: 'Бавария',
+        description: 'Wilkommen. Начните 1 уровень',
+        image: 'bavaria.png',
+        unlocked: false
+    },
+    first_blood: {
+        id: 'first_blood',
+        title: 'Первая кровь',
+        description: 'Сбейте ваш первый самолет',
+        image: 'first_blood.png',
+        unlocked: false
+    },
+    face_in_dirt: {
+        id: 'face_in_dirt',
+        title: 'Лицом в грязь',
+        description: 'Проиграйте впервые',
+        image: 'face_in_dirt.png',
+        unlocked: false
+    },
+    control_purchase: {
+        id: 'control_purchase',
+        title: 'Контрольная закупка',
+        description: 'Купите что-то в магазине',
+        image: 'control_purchase.png',
+        unlocked: false
+    },
+    three_in_row: {
+        id: 'three_in_row',
+        title: 'Три в ряд',
+        description: 'Купите все 3 вида снарядов',
+        image: 'three_in_row.jpg',
+        unlocked: false
+    },
+    air_support: {
+        id: 'air_support',
+        title: 'Поддержка с воздуха!',
+        description: 'Призовите на помощь союзный самолет',
+        image: 'air_support.png',
+        unlocked: false
+    },
+    apocalypse: {
+        id: 'apocalypse',
+        title: 'Апокалипсис',
+        description: 'Опробуйте функцию сотен разрывающихся снарядов в небе!',
+        image: 'apocalypse.png',
+        unlocked: false
+    },
+    engineer: {
+        id: 'engineer',
+        title: 'Инженер',
+        description: 'Почините вашу ПВО',
+        image: 'engineer.png',
+        unlocked: false
+    },
+    general: {
+        id: 'general',
+        title: 'Генерал',
+        description: 'Одолейте Эриха Шольца и его летающую тарелку!',
+        image: 'erich_scholz.png',
+        unlocked: false
+    },
+    kyoto: {
+        id: 'kyoto',
+        title: 'Киото',
+        description: 'Konnichiwa. Начните 6 уровень',
+        image: 'kyoto.png',
+        unlocked: false
+    },
+    senbonsakura: {
+        id: 'senbonsakura',
+        title: 'Сенбонсакура!',
+        description: 'Впервые ощутите погоду сакуры',
+        image: 'senbonsakura.png',
+        unlocked: false
+    },
+    admiral: {
+        id: 'admiral',
+        title: 'Адмирал',
+        description: 'Одолейте Цусиму Якамото и переживите все атаки Ямато!',
+        image: 'tsushima_yakamoto.png',
+        unlocked: false
+    }
+};
+
+// Функции для работы с достижениями
+function loadAchievements() {
+    const saved = localStorage.getItem('airBlitzkriegAchievements');
+    if (saved) {
+        const savedAchievements = JSON.parse(saved);
+        Object.keys(savedAchievements).forEach(key => {
+            if (ACHIEVEMENTS[key]) {
+                ACHIEVEMENTS[key].unlocked = savedAchievements[key].unlocked;
+            }
+        });
+    }
+    
+    console.log('✅ Достижения загружены:', getUnlockedAchievementsCount(), 'из', Object.keys(ACHIEVEMENTS).length);
+}
+
+function saveAchievements() {
+    localStorage.setItem('airBlitzkriegAchievements', JSON.stringify(ACHIEVEMENTS));
+}
+
+function unlockAchievement(achievementId) {
+    if (ACHIEVEMENTS[achievementId] && !ACHIEVEMENTS[achievementId].unlocked) {
+        ACHIEVEMENTS[achievementId].unlocked = true;
+        saveAchievements();
+        
+        // ВОСПРОИЗВОДИМ ЗВУК ДОСТИЖЕНИЯ
+        if (typeof playAchievementSound === 'function') {
+            playAchievementSound();
+        }
+        
+        // Показываем уведомление о получении достижения
+        showAchievementNotification(ACHIEVEMENTS[achievementId]);
+        
+        console.log(`🎉 Получено достижение: ${ACHIEVEMENTS[achievementId].title}`);
+        return true;
+    }
+    return false;
+}
+
+function showAchievementNotification(achievement) {
+    const notification = document.createElement('div');
+    notification.className = 'achievement-notification';
+    notification.innerHTML = `
+        <div class="achievement-notification-content">
+            <div class="achievement-notification-icon">
+                <div class="achievement-image-small ${achievement.unlocked ? 'unlocked' : 'locked'}">
+                    <img src="images/${achievement.image}" alt="${achievement.title}">
+                </div>
+            </div>
+            <div class="achievement-notification-text">
+                <div class="achievement-notification-title">Достижение получено!</div>
+                <div class="achievement-notification-name">${achievement.title}</div>
+                <div class="achievement-notification-desc">${achievement.description}</div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Автоматическое скрытие через 5 секунд
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 5000);
+}
+
+// Функция для показа окна достижений
+function showAchievements() {
+    const modal = document.createElement('div');
+    modal.id = 'achievementsModal';
+    modal.className = 'achievements-modal';
+    modal.innerHTML = `
+        <div class="modal-overlay"></div>
+        <div class="achievements-content">
+            <div class="achievements-header">
+                <h2>🏆 Достижения</h2>
+                <button class="close-achievements-btn" onclick="closeAchievements()">×</button>
+            </div>
+            <div class="achievements-list" id="achievementsList">
+                ${generateAchievementsHTML()}
+            </div>
+            <div class="achievements-footer">
+                <div class="achievements-stats">
+                    Получено: <span id="achievementsCount">${getUnlockedAchievementsCount()}</span> / ${Object.keys(ACHIEVEMENTS).length}
+                </div>
+                <button class="btn achievements-close-btn" onclick="closeAchievements()">Закрыть</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Закрытие по ESC
+    const handleKeydown = (e) => {
+        if (e.key === 'Escape') {
+            closeAchievements();
+        }
+    };
+    document.addEventListener('keydown', handleKeydown);
+
+    modal.querySelector('.modal-overlay').addEventListener('click', closeAchievements);
+}
+
+function generateAchievementsHTML() {
+    return Object.values(ACHIEVEMENTS).map(achievement => `
+        <div class="achievement-item ${achievement.unlocked ? 'unlocked' : 'locked'}">
+            <div class="achievement-image">
+                <img src="images/${achievement.image}" alt="${achievement.title}">
+            </div>
+            <div class="achievement-info">
+                <div class="achievement-title">${achievement.title}</div>
+                <div class="achievement-description">${achievement.description}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function getUnlockedAchievementsCount() {
+    return Object.values(ACHIEVEMENTS).filter(ach => ach.unlocked).length;
+}
+
+function closeAchievements() {
+    const modal = document.getElementById('achievementsModal');
+    if (modal) {
+        modal.remove();
+    }
+    document.removeEventListener('keydown', handleKeydown);
+}
+
+// Обновляем главное меню с вертикальной ориентацией
+function showMainMenu() {
+    hideAllScreens();
+    document.getElementById('mainMenu').classList.remove('hidden');
+    currentScreen = 'mainMenu';
+    
+    // Загружаем достижения при показе меню
+    loadAchievements();
+    
+    // ВОССТАНАВЛИВАЕМ ОТОБРАЖЕНИЕ СЧЕТЧИКА САМОЛЕТОВ
+    const enemiesCounter = document.getElementById('enemiesCounter');
+    if (enemiesCounter) {
+        enemiesCounter.style.display = 'block';
+    }
+}
+
+// Функция для показа окна завершения уровня
+function showLevelCompleteModal(level, destroyedCount, hasBoss = false, bossDefeated = false, nextLevelUnlocked = false) {
+    const timePlayed = gameState ? formatTime(gameState.gameTime) : '0:00';
+    
+    let message = `Уровень ${level} пройден!<br><br>`;
+    message += `⏱️ Время: ${timePlayed}<br>`;
+    message += `✈️ Уничтожено самолетов: ${destroyedCount}`;
+    
+    if (hasBoss) {
+        if (bossDefeated) {
+            message += `<br>🎉 БОСС уничтожен! +100 шестерней`;
+        } else {
+            message += `<br>⚠️ БОСС остался жив!`;
+        }
+    }
+    
+    if (nextLevelUnlocked) {
+        message += `<br><br>🎊 Уровень ${level + 1} разблокирован!`;
+    }
+
+    createModal('🎉 ПОБЕДА!', message, 'Продолжить', () => {
+        showLevelSelect();
+    });
+}
+
+// Функция для показа окна поражения
+function showGameOverModal(level, destroyedCount, hasBoss = false) {
+    const timePlayed = gameState ? formatTime(gameState.gameTime) : '0:00';
+    
+    let message = `Уровень ${level} не пройден<br><br>`;
+    message += `⏱️ Время: ${timePlayed}<br>`;
+    message += `✈️ Уничтожено самолетов: ${destroyedCount}`;
+    
+    if (hasBoss) {
+        message += `<br>⚠️ БОСС остался жив!`;
+    }
+    
+    message += `<br><br>Попробуйте еще раз!`;
+
+    createModal('💀 ПОРАЖЕНИЕ', message, 'Повторить', () => {
+        showLevelSelect();
+    });
+}
+
+// Функция для показа окна бесконечного режима
+function showInfiniteGameOverModal(destroyedCount, waveNumber, bossDefeated = false) {
+    const timePlayed = gameState ? formatTime(gameState.gameTime) : '0:00';
+    
+    let message = `Бесконечная война окончена!<br><br>`;
+    message += `⏱️ Время выживания: ${timePlayed}<br>`;
+    message += `✈️ Уничтожено самолетов: ${destroyedCount}<br>`;
+    message += `🌊 Достигнутая волна: ${waveNumber}`;
+    
+    if (bossDefeated) {
+        message += `<br>🎉 БОСС повержен!`;
+    }
+    
+    message += `<br><br>Это был достойный бой!`;
+
+    createModal('∞ КОНЕЦ БИТВЫ', message, 'В меню', () => {
+        showLevelSelect();
+    });
+}
+
+// Функция для показа информационного сообщения
+function showInfoModal(title, message) {
+    createModal(title, message, 'Понятно');
+}
+
+// Функция для показа сообщения о недоступном уровне
+function showLevelLockedModal() {
+    createModal('🔒 Уровень заблокирован', 'Этот уровень еще не доступен! Сначала пройдите предыдущие уровни.', 'OK');
+}
+
+// Функция для форматирования времени
+function formatTime(gameTime) {
+    const totalSeconds = Math.floor(gameTime / 60);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
 
 // Функция для сохранения прогресса
 function saveProgress() {
@@ -88,18 +483,6 @@ function showLevelSelect() {
     
     // СБРАСЫВАЕМ АПОКАЛИПСИС ПРИ ВОЗВРАТЕ В МЕНЮ
     resetApocalypse();
-    
-    // ВОССТАНАВЛИВАЕМ ОТОБРАЖЕНИЕ СЧЕТЧИКА САМОЛЕТОВ
-    const enemiesCounter = document.getElementById('enemiesCounter');
-    if (enemiesCounter) {
-        enemiesCounter.style.display = 'block';
-    }
-}
-
-function showMainMenu() {
-    hideAllScreens();
-    document.getElementById('mainMenu').classList.remove('hidden');
-    currentScreen = 'mainMenu';
     
     // ВОССТАНАВЛИВАЕМ ОТОБРАЖЕНИЕ СЧЕТЧИКА САМОЛЕТОВ
     const enemiesCounter = document.getElementById('enemiesCounter');
@@ -221,6 +604,7 @@ function callFighter() {
         
         console.log('Истребитель ВВС СССР вызван!');
     }
+    unlockAchievement('air_support'); // Поддержка с воздуха
 }
 
 function updateUI() {
@@ -317,10 +701,22 @@ function updateApocalypseUI() {
     }
 }
 
+// Функция для показа окна подтверждения выхода
+function showExitConfirmModal() {
+    createModal(
+        '🚪 Выход из игры', 
+        'Вы уверены, что хотите выйти из игры?<br>', 
+        'Выйти', 
+        () => {
+            window.close();
+        },
+        true, // Показать кнопку отмены
+        'Остаться' // Текст кнопки отмены
+    );
+}
+
 function exitGame() {
-    if (confirm('Выйти из игры?')) {
-        window.close();
-    }
+    showExitConfirmModal();
 }
 
 // Новые функции для системы снарядов и магазина
@@ -647,6 +1043,9 @@ function buyAmmo(type) {
             updateShopButtons();
         }, 800);
     }
+
+    unlockAchievement('control_purchase'); // Контрольная закупка
+    checkThreeAmmoTypes() // Три в ряд
 }
 
 // НОВАЯ ФУНКЦИЯ: Обновление счетчиков боеприпасов в магазине

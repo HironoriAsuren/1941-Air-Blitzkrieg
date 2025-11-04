@@ -18,9 +18,12 @@ function startLevel(level) {
     
     // Проверяем, доступен ли уровень (дополнительная защита)
     if (level > gameProgress.unlockedLevels) {
-        alert('Этот уровень еще не доступен! Сначала пройдите предыдущие уровни.');
+        showLevelLockedModal();
         return;
     }
+    
+    // ПРОВЕРКА ДОСТИЖЕНИЙ ПРИ НАЧАЛЕ УРОВНЯ
+    checkLevelStartAchievements(level);
     
     // СБРАСЫВАЕМ АПОКАЛИПСИС ПРИ НАЧАЛЕ НОВОГО УРОВНЯ
     resetApocalypse();
@@ -46,10 +49,10 @@ function startLevel(level) {
         player: new Player(),
         gameTime: 0,
         destroyedCount: 0,
-        details: 0,
+        details: 50,
         isMoving: false,
-        gameActive: true,        // Игра активна - можно стрелять и двигаться
-        animationActive: false,  // Анимации не активны (только после смерти)
+        gameActive: true,
+        animationActive: false,
         friendlyFighters: [],
         boss: null,
         bossSpawned: false
@@ -65,8 +68,21 @@ function startLevel(level) {
     startEnemySpawning();
 }
 
+// Новая функция для проверки достижений при начале уровня
+function checkLevelStartAchievements(level) {
+    // Бавария - начало 1 уровня
+    if (level === 1) {
+        unlockAchievement('bavaria');
+    }
+    
+    // Киото - начало 6 уровня
+    if (level === 6) {
+        unlockAchievement('kyoto');
+    }
+}
+
 function startInfiniteWar() {
-    // СБРАСЫВАЕМ АПОКАЛИПСИС ПРИ НАЧАЛЕ БЕСКОНЕЧНОЙ ВОЙНЫ
+    loadAchievements();
     resetApocalypse();
 
     // Инициализация звуков
@@ -165,6 +181,7 @@ function repairPlayer() {
     // Списание шестерней и починка
     gameState.details -= REPAIR_COST;
     player.health++;
+    unlockAchievement('engineer'); // Инженер
     
     // Обновляем UI
     updateDetailsUI();
@@ -481,6 +498,7 @@ function update() {
                 // ДЛЯ ОБЫЧНЫХ УРОВНЕЙ - завершаем уровень
                 console.log('🎉 Босс полностью уничтожен! Завершаем уровень...');
                 setTimeout(() => levelComplete(), 2000);
+                unlockAchievement('general'); // Генерал
             }
             
             gameState.boss = null;
@@ -1084,8 +1102,16 @@ function showGameOver() {
     // Полностью останавливаем все
     stopAllAnimations();
     
-    alert(`Игра окончена! Уровень ${gameState.currentLevel}. Уничтожено самолетов: ${gameState.destroyedCount}`);
-    showLevelSelect();
+    const hasBoss = CONFIG.UFO.BOSS_LEVELS.includes(gameState.currentLevel) || gameState.currentLevel === 10;
+    
+    // Используем новое модальное окно вместо alert
+    showGameOverModal(
+        gameState.currentLevel,
+        gameState.destroyedCount,
+        hasBoss
+    );
+
+    unlockAchievement('face_in_dirt'); // Лицом в грязь
 }
 
 function render() {
@@ -1792,7 +1818,6 @@ function checkCollision(obj1, obj2) {
 }
 
 function levelComplete() {
-    
     if (gameState) {
         gameState.gameActive = false;
         
@@ -1809,6 +1834,7 @@ function levelComplete() {
             saveProgress();
         }
     }
+    
     // Останавливаем звуки при завершении уровня
     soundManager.stopAll();
     
@@ -1817,24 +1843,18 @@ function levelComplete() {
     }
     
     const enemiesForThisLevel = CONFIG.getEnemiesForLevel(gameState.currentLevel);
+    const hasBoss = CONFIG.UFO.BOSS_LEVELS.includes(gameState.currentLevel) || gameState.currentLevel === 10;
+    const bossDefeated = !gameState.boss;
+    const nextLevelUnlocked = gameState.currentLevel < CONFIG.TOTAL_LEVELS;
     
-    let message = `Уровень ${gameState.currentLevel} пройден! Уничтожено самолетов: ${gameState.destroyedCount}`;
-    
-    if (CONFIG.UFO.BOSS_LEVELS.includes(gameState.currentLevel) && gameState.bossSpawned) {
-        if (gameState.boss) {
-            message += "\n⚠️ БОСС остался жив!";
-        } else {
-            message += "\n🎉 БОСС уничтожен! +100 шестерней";
-        }
-    }
-    
-    // Сообщение о разблокировке следующего уровня
-    if (gameState.currentLevel < CONFIG.TOTAL_LEVELS) {
-        message += `\n🎊 Уровень ${gameState.currentLevel + 1} разблокирован!`;
-    }
-    
-    alert(message);
-    showLevelSelect(); // Возвращаем к выбору уровней
+    // Используем новое модальное окно
+    showLevelCompleteModal(
+        gameState.currentLevel,
+        gameState.destroyedCount,
+        hasBoss,
+        bossDefeated,
+        nextLevelUnlocked
+    );
 }
 
 function gameOver() {
@@ -1845,19 +1865,23 @@ function gameOver() {
         clearInterval(spawnInterval);
     }
     
-    // ИСПОЛЬЗУЕМ ВСПОМОГАТЕЛЬНУЮ ФУНКЦИЮ
-    const enemiesForThisLevel = CONFIG.getEnemiesForLevel(gameState.currentLevel);
+    const hasBoss = CONFIG.UFO.BOSS_LEVELS.includes(gameState.currentLevel) || gameState.currentLevel === 10;
     
-    let message = `Игра окончена! Уровень ${gameState.currentLevel}. Уничтожено самолетов: ${gameState.destroyedCount}`;
+    // Используем новое модальное окно
+    showGameOverModal(
+        gameState.currentLevel,
+        gameState.destroyedCount,
+        hasBoss
+    );
+
+}
+
+function showInfiniteGameOver() {
+    const destroyedCount = gameState ? gameState.destroyedCount : 0;
+    const waveNumber = gameState && gameState.infiniteWar ? gameState.infiniteWar.waveNumber : 1;
+    const bossDefeated = gameState && gameState.boss ? false : true;
     
-    if (CONFIG.UFO.BOSS_LEVELS.includes(gameState.currentLevel) && gameState.bossSpawned) {
-        if (gameState.boss) {
-            message += "\n⚠️ БОСС остался жив!";
-        }
-    }
-    
-    alert(message);
-    showLevelSelect();
+    showInfiniteGameOverModal(destroyedCount, waveNumber, bossDefeated);
 }
 
 let apocalypseActive = false;
@@ -1910,6 +1934,7 @@ function startAirApocalypse() {
     
     // Визуальные эффекты
     startApocalypseEffects();
+    unlockAchievement('apocalypse'); // Апокалипсис
 }
 
 
@@ -2145,4 +2170,13 @@ class SakuraAura {
         this.startFadeOut();
     }
 
+}
+
+function checkThreeAmmoTypes() {
+    const player = gameState.player;
+    if (player.ammoInventory.normal > 0 && 
+        player.ammoInventory.piercing > 0 && 
+        player.ammoInventory.explosive > 0) {
+        unlockAchievement('three_in_row');
+    }
 }

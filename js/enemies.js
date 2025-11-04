@@ -1,6 +1,13 @@
 // enemies.js - с защитой от неопределенных переменных
 console.log('✅ enemies.js загружен');
 
+// Функции для разблокировки достижений
+function checkFirstBlood() {
+    if (gameState.destroyedCount === 1) {
+        unlockAchievement('first_blood');
+    }
+}
+
 // Базовый класс самолета
 class Enemy {
     constructor(type) {
@@ -59,6 +66,7 @@ class Enemy {
 
     update() {
         if (this.isCrashing) {
+            checkFirstBlood(); // Проверяем "Первая кровь" 
             this.x += Math.cos(this.crashRotation) * 2;
             this.y += this.crashSpeed;
             this.crashRotation += this.crashRotationSpeed;
@@ -2648,6 +2656,8 @@ class YamatoBoss {
         for (let i = 0; i < 15; i++) {
             this.createSakuraParticle();
         }
+
+        unlockAchievement('senbonsakura'); // Сенбонсакура
     }
 
     applySakuraBuffToEnemy(enemy) {
@@ -3055,9 +3065,10 @@ class YamatoBoss {
                 updateDetailsUI();
             }
         } else {
-            console.log('🎉 Уровень 10 пройден! Ямато уничтожен!');
+            console.log('🎉 Уровень 10 пройден! Ямато уплыл!');
             if (gameState) {
                 gameState.gameActive = false;
+                unlockAchievement('admiral'); // Адмирал
                 setTimeout(() => levelComplete(), 2000);
             }
         }

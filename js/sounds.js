@@ -293,6 +293,10 @@ function playMineBoom() {
     return soundManager.playQuick('mineboom', 0.9);
 }
 
+function playAchievementSound() {
+    return soundManager.playQuick('getachieved', 0.8);
+}
+
 // Остановка всех диалоговых звуков
 function stopDialogSounds() {
     soundManager.stopByType('Japanese_admiral');

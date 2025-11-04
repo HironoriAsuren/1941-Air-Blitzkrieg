@@ -1116,3 +1116,511 @@ canvas {
         gap: 10px;
     }
 }
+
+/* Стили для кастомизированных модальных окон */
+.custom-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    position: relative;
+    width: 60%;
+    height: 60%;
+    max-width: 600px;
+    max-height: 500px;
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    border: 3px solid #3498db;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: modalAppear 0.3s ease-out;
+}
+
+@keyframes modalAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    padding: 20px;
+    text-align: center;
+    border-bottom: 2px solid #1abc9c;
+}
+
+.modal-title {
+    margin: 0;
+    color: white;
+    font-size: 2em;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.modal-body {
+    flex: 1;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+}
+
+.modal-message {
+    color: #ecf0f1;
+    font-size: 1.3em;
+    line-height: 1.6;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.modal-footer {
+    padding: 20px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    border-top: 1px solid #34495e;
+}
+
+.modal-btn {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    border: 2px solid #fff;
+    padding: 12px 40px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: white;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-btn:hover {
+    background: linear-gradient(135deg, #c0392b, #a93226);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.modal-btn:active {
+    transform: translateY(0);
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 90%;
+        height: 70%;
+    }
+    
+    .modal-title {
+        font-size: 1.5em;
+    }
+    
+    .modal-message {
+        font-size: 1.1em;
+    }
+    
+    .modal-btn {
+        padding: 10px 30px;
+        font-size: 1.1em;
+    }
+}
+
+/* Стили для модальных окон с двумя кнопками */
+.modal-buttons {
+    padding: 20px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    border-top: 1px solid #34495e;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.modal-btn-confirm {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    border: 2px solid #fff;
+    padding: 12px 30px;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: white;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    flex: 1;
+    max-width: 140px;
+}
+
+.modal-btn-cancel {
+    background: linear-gradient(135deg, #7f8c8d, #95a5a6);
+    border: 2px solid #fff;
+    padding: 12px 30px;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: white;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    flex: 1;
+    max-width: 140px;
+}
+
+.modal-btn-confirm:hover {
+    background: linear-gradient(135deg, #c0392b, #a93226);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.modal-btn-cancel:hover {
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.modal-btn-confirm:active,
+.modal-btn-cancel:active {
+    transform: translateY(0);
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .modal-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .modal-btn-confirm,
+    .modal-btn-cancel {
+        max-width: none;
+    }
+}
+
+/* Стили для вертикального меню */
+.menu-buttons-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    overflow: hidden;
+    align-items: center;
+}
+
+.menu-btn {
+    width: 100%;
+    padding: 15px 20px;
+    font-size: 1.3em;
+    font-weight: bold;
+    text-align: center;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border: 2px solid #1abc9c;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.menu-btn:hover {
+    background: linear-gradient(135deg, #2980b9, #2471a3);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.menu-btn:active {
+    transform: translateY(-1px);
+}
+
+/* Стили для модального окна достижений */
+.achievements-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.achievements-content {
+    position: relative;
+    width: 80%;
+    height: 80%;
+    max-width: 800px;
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    border: 3px solid #f1c40f;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: modalAppear 0.3s ease-out;
+}
+
+.achievements-header {
+    background: linear-gradient(135deg, #f1c40f, #f39c12);
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #e67e22;
+}
+
+.achievements-header h2 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 2em;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.close-achievements-btn {
+    background: none;
+    border: none;
+    font-size: 2.5em;
+    color: #2c3e50;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.close-achievements-btn:hover {
+    background: rgba(44, 62, 80, 0.2);
+    transform: scale(1.1);
+}
+
+.achievements-list {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 15px;
+}
+
+.achievement-item {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.achievement-item.unlocked {
+    border-color: #f1c40f;
+    background: rgba(241, 196, 15, 0.1);
+}
+
+.achievement-item.locked {
+    opacity: 0.7;
+    border-color: #7f8c8d;
+}
+
+.achievement-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 3px solid;
+}
+
+.achievement-item.unlocked .achievement-image {
+    border-color: #f1c40f;
+}
+
+.achievement-item.locked .achievement-image {
+    border-color: #7f8c8d;
+}
+
+.achievement-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.achievement-item.locked .achievement-image img {
+    filter: grayscale(100%) brightness(50%);
+}
+
+.achievement-info {
+    flex: 1;
+}
+
+.achievement-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #ecf0f1;
+    margin-bottom: 5px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.achievement-description {
+    font-size: 0.9em;
+    color: #bdc3c7;
+    line-height: 1.4;
+}
+
+.achievements-footer {
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-top: 1px solid #34495e;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.achievements-stats {
+    color: #ecf0f1;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.achievements-close-btn {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    border: 2px solid #fff;
+    padding: 10px 25px;
+    font-size: 1.1em;
+    color: white;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.achievements-close-btn:hover {
+    background: linear-gradient(135deg, #c0392b, #a93226);
+    transform: translateY(-2px);
+}
+
+/* Уведомление о получении достижения */
+.achievement-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+    animation: slideInRight 0.5s ease-out;
+}
+
+.achievement-notification-content {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    border: 3px solid #f1c40f;
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    max-width: 350px;
+}
+
+.achievement-image-small {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 2px solid #f1c40f;
+}
+
+.achievement-image-small img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.achievement-notification-text {
+    flex: 1;
+}
+
+.achievement-notification-title {
+    font-size: 0.8em;
+    color: #f1c40f;
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.achievement-notification-name {
+    font-size: 1.1em;
+    color: #ecf0f1;
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+
+.achievement-notification-desc {
+    font-size: 0.8em;
+    color: #bdc3c7;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .achievements-content {
+        width: 95%;
+        height: 90%;
+    }
+    
+    .achievements-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .menu-buttons-vertical {
+        max-width: 250px;
+    }
+    
+    .menu-btn {
+        font-size: 1.1em;
+        padding: 12px 15px;
+    }
+}

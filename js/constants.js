@@ -16,7 +16,7 @@ const CONFIG = {
         7: 22,
         8: 25,
         9: 30,
-        10: 35
+        10: 35 
     },
     TOTAL_LEVELS: 11, // 10 обычных + бесконечный
     FIGHTER_COST: 50,
@@ -70,8 +70,8 @@ const CONFIG = {
         }
     },
     INFINITE_MODE: {
-        BOSS_SPAWN_INTERVAL: 12000, // 200 секунд (18000 / 60 = 300)
-        YAMATO_DURATION: 12000, // 200 секунд
+        BOSS_SPAWN_INTERVAL: 12000, // 200 секунд - 12000
+        YAMATO_DURATION: 12000, // 200 секунд - 12000
         ENEMY_SPAWN_RATE: 1000,
         WAVE_INTERVAL: 3000,
         BOSS_CHANCE: 1.0
